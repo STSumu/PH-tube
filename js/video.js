@@ -77,8 +77,8 @@ function invertion(time){
     return `${hour} hour ${minute} minute ${second} second ago`;
 }
 // Load videos
-const loadVideos = () => {
-  fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+const loadVideos = (searchInput = " ") => {
+  fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${searchInput}`)
     .then((res) => res.json())
     .then((data) => displayVideos(data.videos))
     .catch((err) => console.log(err));
@@ -133,4 +133,9 @@ const displayVideos = (data) => {
     videoContainer.appendChild(div);
   });
 };
+
+// search functionality 
+document.getElementById("search-input").addEventListener("keyup",(e)=> {
+  loadVideos(e.target.value);
+})
 loadVideos();
