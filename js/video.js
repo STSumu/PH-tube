@@ -7,16 +7,48 @@ const loadCatagories = () => {
     .catch((err) => console.log(err));
 };
 
-
+// make every btn inactive
+const activeBtnRemove=() =>{
+  const btn=document.getElementsByClassName("category-btn");
+  for(const item of btn){
+    item.classList.remove("active");
+  }
+}
 //load category wise videos
 const loadCategoryVideos= (id) => {
   fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
   .then((res) => res.json())
-  .then((data) => displayVideos(data.category))
+  .then((data) => {
+    activeBtnRemove();
+    const activeBtn=document.getElementById(`btn-${id}`);
+    activeBtn.classList.add('active');
+    displayVideos(data.category)
+  })
   .catch((err) => console.log(err));
 }
 
-
+//details showing function
+const showDetails= async (id) =>{
+  // fetch(`https://openapi.programming-hero.com/api/phero-tube/video/${id}`)
+  // .then((res) => res.json())
+  // .then((data) => console.log(data.video.description))
+  // .catch((err) => console.log(err));
+  const url=`https://openapi.programming-hero.com/api/phero-tube/video/${id}`;
+  const res=await fetch(url);
+  const data=await res.json();
+  console.log(data.video.description);
+  // get the div
+  const detailContainer=document.getElementById('modal-content');
+  detailContainer.innerHTML=`
+   <img src="${data.video.thumbnail}">
+   <p>${data.video.description}</p>
+  `
+  // click the modal button 
+  // way-1
+  // document.getElementById("showModalBtn").click();
+  // way-2 
+  document.getElementById("customModal").showModal();
+}
 const displayCatagories = (arr) => {
   const catagoriesContainer = document.getElementById("category-container");
   arr.forEach((item) => {
@@ -27,7 +59,7 @@ const displayCatagories = (arr) => {
     // button.innerText = item.category;
     const buttonContainer=document.createElement('div');
     buttonContainer.innerHTML=`
-    <button class="btn" onclick="loadCategoryVideos(${item.category_id})">
+    <button id="btn-${item.category_id}" class="btn category-btn" onclick="loadCategoryVideos(${item.category_id})">
     ${item.category}
     </button>
     `;
@@ -94,6 +126,7 @@ const displayVideos = (data) => {
        }
     </div>
     <p class="text-gray-400 text-sm">${item.others.views} views</p>
+    <button class="btn btn-error btn-sm" onclick="showDetails('${item.video_id}')">details</button>
     </div>
   </div>
         `;
